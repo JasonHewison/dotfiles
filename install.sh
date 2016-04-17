@@ -36,7 +36,7 @@ curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubuserc
 
 printf "${GREEN}DONE!${NORMAL}\n"
 
-printf "${CYAN}Create symlinks to .tmux.conf, fish.config and init.vim...${NORMAL}\n"
+printf "${CYAN}Create symlinks to .tmux.conf, config.fish and init.vim...${NORMAL}\n"
 #mv ~/.tmux.conf ~/.tmux.conf.back
 
 # TODO: Configure TMUX
@@ -55,8 +55,8 @@ ln -s ${SCRIPTPATH}/neovim/.config/nvim/init.vim ~/.config/nvim/init.vim
 #
 # Fish settings
 #
-mv ~/.config/fish/fish.config ~/.config/fish/fish.config.back
-ln -s ${SCRIPTPATH}/fish/.config/fish/fish.config ~/.config/fish/fish.config
+mv ~/.config/fish/config.fish ~/.config/fish/config.fish.back
+ln -s ${SCRIPTPATH}/fish/.config/fish/config.fish ~/.config/fish/config.fish
 
 printf "${GREEN}DONE!${NORMAL}\n"
 
