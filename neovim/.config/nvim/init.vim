@@ -6,9 +6,10 @@ Plug 'chriskempson/base16-vim'
 Plug 'ctrlpvim/ctrlp.vim' " fuzzy file finder, mapped to <leader>t
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] } | Plug 'Xuyuanp/nerdtree-git-plugin' | Plug 'ryanoasis/vim-devicons' " file drawer
 Plug 'tpope/vim-fugitive' " amazing git wrapper for vim
-" Plug 'Shougo/deoplete.vim' " keyword completion
-" Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
+Plug 'Shougo/deoplete.nvim' " keyword completion
+Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
 Plug 'benekastah/neomake'
+Plug 'editorconfig/editorconfig-vim'
 
 call plug#end()
 
@@ -139,16 +140,13 @@ nmap <silent><leader>gb :Gblame<cr>
 "
 "	Deoplete
 "
-"let g:deoplete#enable_at_startup = 1
-"if !exists('g:deoplete#omni#input_patterns')
-"  let g:deoplete#omni#input_patterns = {}
-"endif
-" let g:deoplete#disable_auto_complete = 1
-"autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
-" deoplete tab-complete
-"inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : deoplete#mappings#manual_complete()
-" ,<Tab> for regular tab
-"inoremap <Leader><Tab> <Space><Space>
+set runtimepath+=~/.config/nvim/plugged/deoplete.nvim/
+let g:deoplete#enable_at_startup = 1
+if !exists('g:deoplete#omni#input_patterns')
+  let g:deoplete#omni#input_patterns = {}
+endif
+let g:deoplete#disable_auto_complete = 0
+autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 "
 "	Omnifuncs
@@ -195,3 +193,8 @@ nmap <Leader><Space>c :lclose<CR>
 nmap <Leader><Space>, :ll<CR>
 nmap <Leader><Space>n :lnext<CR>
 nmap <Leader><Space>p :lprev<CR>
+
+
+call remote#host#RegisterPlugin('python3', '/home/shougo/work/deoplete.nvim/rplugin/python3/deoplete.py', [
+      \ {'sync': 1, 'name': 'DeopleteInitializePython', 'type': 'command', 'opts': {}},
+     \ ])
