@@ -1,3 +1,4 @@
+let $NVIM_TUI_ENABLE_CURSOR_SHAPE=1
 let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 
 call plug#begin('~/.config/nvim/plugged')
@@ -5,7 +6,7 @@ call plug#begin('~/.config/nvim/plugged')
 " colorschemes
 Plug 'chriskempson/base16-vim'
 Plug 'frankier/neovim-colors-solarized-truecolor-only'
-Plug 'morhetz/gruvbox'
+Plug 'tomasr/molokai'
 
 Plug 'ctrlpvim/ctrlp.vim' " fuzzy file finder, mapped to <leader>t
 Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] } | Plug 'Xuyuanp/nerdtree-git-plugin' | Plug 'ryanoasis/vim-devicons' " file drawer
@@ -29,9 +30,8 @@ call plug#end()
 
 filetype plugin indent on
 
-set background=dark
-colorscheme gruvbox
-hi clear Conceal
+colorscheme molokai
+let g:rehash256=1
 
 let mapleader = ","
 let g:mapleader = ','
@@ -223,7 +223,8 @@ set hidden
 let g:airline#extensions#tabline#fnamemod = ':t'
 let g:airline#extensions#tabline#show_tab_nr = 1
 let g:airline_powerline_fonts = 1
-let g:airline_theme='base16'
+"let g:airline_theme='distinguished'
+let g:airline_theme='dark'
 cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Sayonara' : 'x'
 nmap <leader>t :term<cr>
 nmap <leader>, :bnext<CR>
