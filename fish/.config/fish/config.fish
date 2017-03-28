@@ -2,11 +2,7 @@ set EDITOR nvim
 set VISUAL nvim
 set fish_greeting ""
 
-set PATH node_modules/.bin /Applications/MySQLWorkbench.app/Contents/MacOS $PATH
-
-function fish_prompt
-  ~/powerline-shell/powerline-shell.py $status --shell bare ^/dev/null
-end
+set PATH node_modules/.bin $PATH
 
 # Local config.
 if [ -f ~/.local.fish ]
@@ -14,3 +10,4 @@ if [ -f ~/.local.fish ]
 end
 
 alias vim "nvim"
+alias dockerup="bash --login '/Applications/Docker/Docker Quickstart Terminal.app/Contents/Resources/Scripts/start.sh'"

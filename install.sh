@@ -1,85 +1,142 @@
 #!/usr/bin/env bash
 
-EEN='\033[0;32m'
-CYAN='\033[0;36m'
-NORMAL='\033[0m'
-YELLOW='\033[0;33m'
 SCRIPTPATH=`pwd -P`
+BACKUP=`date +'%Y%m%d%H%M%S'`
 
-printf "${GREEN}"
-echo "______      _    __ _ _           "
-echo "|  _  \    | |  / _(_) |          "
-echo "| | | |___ | |_| |_ _| | ___  ___ "
-echo "| | | / _ \| __|  _| | |/ _ \/ __|"
-echo "| |/ / (_) | |_| | | | |  __/\__ \\"
-echo "|___/ \___/ \__|_| |_|_|\___||___/"
-printf "${NORMAl}\n\n"
-
-printf "${CYAN}Installation started...\n${NORMAL}"
-
-# TODO: OS Installation specific stuff
-# if [ "$(uname)" = 'Linux' ]; then
-  source install/linux.sh
-#elif [ "$(uname)" = 'Darwin' ]; then
-  source install/osx.sh
-#fi
-
-if [ ! -d "~/.config" ]; then
-  mkdir ~/.config
-  mkdir ~/.config/nvim
-  mkdir ~/.config/fish
+which -s brew
+if [[ $? != 0 ]] ; then
+  printf "Installing Homebrew\n"
+  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+else
+  printf "Updating Homebrew\n"
+  brew update
 fi
 
-printf "${CYAN}Install vim plug...${NORMAL}\n"
-mv --backup=numbered ~/.config/nvim ~/.config/nvim.back
-curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+if brew info node | grep "Not installed"; then
+  printf "Installing node\n"
+  brew install node
+fi
 
-printf "${GREEN}DONE!${NORMAL}\n"
+if brew cask info hyper | grep "Not installed"; then
+  printf "Installing hyper\n"
+  brew cask install hyper
+fi
 
-printf "${CYAN}Create symlinks to .tmux.conf, config.fish and init.vim...${NORMAL}\n"
-#mv ~/.tmux.conf ~/.tmux.conf.back
+if brew info python | grep "Not installed"; then
+  printf "Installing python\n"
+  brew install python
+fi
 
-# TODO: Configure TMUX
-#if [ "$(uname)" = 'Linux' ]; then
-#  ln -s ${SCRIPTPATH}/tmux/.tmux-linux.conf ~/.tmux.conf
-#elif [ "$(uname)" = 'Darwin' ]; then
-#  ln -s ${SCRIPTPATH}/tmux/.tmux-osx.conf ~/.tmux.conf
-#fi
+if brew info python3 | grep "Not installed"; then
+  printf "Installing python3\n"
+  brew install python3
+fi
 
-#
-# Neovim settings
-#
-mv ~/.config/nvim/init.vim ~/.config/nvim/init.vim.back
-ln -s ${SCRIPTPATH}/neovim/.config/nvim/init.vim ~/.config/nvim/init.vim
+if ! gem list --local | grep "neovim"; then
+  printf "Installing neovim gem"
+  sudo gem install neovim
+fi
 
-#
-# Fish settings
-#
-mv ~/.config/fish/config.fish ~/.config/fish/config.fish.back
-ln -s ${SCRIPTPATH}/fish/.config/fish/config.fish ~/.config/fish/config.fish
-
-printf "${GREEN}DONE!${NORMAL}\n"
-
-printf "${CYAN}Install python library for neovim...${NORMAL}\n"
-if [ "$(uname)" = 'Linux' ]; then
-  sudo pip2 install neovim
-elif [ "$(uname)" = 'Darwin' ]; then
+if ! pip2 list --format=columns | grep "neovim"; then
+  printf "Installing neovim python2 module\n"
   pip2 install neovim
 fi
-printf "${GREEN}DONE!${NORMAL}\n"
 
-#printf "${CYAN}Install oh-my-fish...${NORMAL}\n"
-#sh -c "$(curl -L https://github.com/oh-my-fish/oh-my-fish/raw/master/bin/install | fish)"
-#mv ~/.zshrc ~/.zshrc.back
-#ln -s ${SCRIPTPATH}/.zshrc ~/.zshrc
+if brew cask info intellij-idea | grep "Not installed"; then
+  printf "Installing intellij-idea\n"
+  brew cask install intellij-idea
+fi
 
-#
-# Change the shell to fish shell
-#
+if brew cask info webstorm | grep "Not installed"; then
+  printf "Installing webstorm\n"
+  brew cask install webstorm
+fi
+
+if brew cask info franz | grep "Not installed"; then
+  printf "Installing franz\n"
+  brew cask install franz
+fi
+
+if brew info neovim/neovim/neovim 2>&1 | grep "brew tap neovim/neovim"; then
+  printf "Tapping neovim\n"
+  brew tap neovim/neovim
+fi
+
+if brew info neovim/neovim/neovim | grep "Not installed"; then
+  printf "Installing neovim\n"
+  brew install neovim/neovim/neovim
+fi
+
+if brew info tmux | grep "Not installed"; then
+  printf "Installing tmux\n"
+  brew install tmux
+fi
+
+if brew info fish | grep "Not installed"; then
+  printf "Installing fish\n"
+  brew install fish
+fi
+
+if brew cask info java | grep "Not installed"; then
+  printf "Installing java\n"
+  brew cask install java
+fi
+
+if brew info yarn | grep "Not installed"; then
+  printf "Installing yarn"
+  brew install yarn
+fi
+
+if [ ! -d ~/.config/ ]; then
+  printf "Creating ~/.config\n"
+  mkdir ~/.config
+fi
+
+if [ -d ~/.config/nvim/ ]; then
+  printf "Backing up existing neovim config\n"
+  mv ~/.config/nvim ~/.config/nvim.bak-${BACKUP}
+fi
+
+printf "Creating ~/.config/nvim\n"
+mkdir ~/.config/nvim
+
+if [ -d ~/.config/fish/ ]; then
+  printf "Backing up existing fish config\n"
+  mv ~/.config/fish ~/.config/fish.bak-${BACKUP}
+
+
+printf "Creating ~/.config/fish\n"
+mkdir ~/.config/fish
+
+if [ ! -f ~/.config/nvim/autoload/plug.vim ]; then
+  printf "Installing vim plug\n"
+  curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+fi
+
+if [ ! -f ~/.config/fish/functions/fisher.fish ]; then
+  printf "Installing fisher\n"
+  curl -Lo ~/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
+fi
+
+printf "Installing pure\n"
+fish -c "fisher rafaelrinaldi/pure"
+
+#printf "Symlinking tmux\n"
+#mv ~/.tmux.conf ~/.tmux.conf.back
+#ln -s ${SCRIPTPATH}/tmux/.tmux-linux.conf ~/.tmux.conf
+
+printf "Symlinking neovim\n"
+ln -s ${SCRIPTPATH}/neovim/.config/nvim/init.vim ~/.config/nvim/init.vim
+
+printf "Symlinking fish\n"
+ln -s ${SCRIPTPATH}/fish/.config/fish/config.fish ~/.config/fish/config.fish
+
+printf "Symlinking tmux\n"
+ln -s ${SCRIPTPATH}/tmux/.tmux.conf ~/.tmux.conf
+
+if ! cat /etc/shells | grep $(which fish); then
+  echo $(which fish) | sudo tee -a /etc/shells
+fi
+
 chsh -s $(which fish)
 
-printf "${GREEN}DONE!${NORMAL}\n"
-printf "${GREEN}COMPLETE!${NORMAL}\n"
-printf "\n\n${YELLOW}NOTE: ${NORMAL} You should install Neovim plugins (:PlugInstall). But before do it you should set up your git (set your email, username and so on) and compile YouCompleteMe. \nSEE: ${CYAN}https://github.com/Valloric/YouCompleteMe#mac-os-x-installation${NORMAL}\n OR: ${CYAN}sudo sh ~/.vim/plugged/YouCompleteMe/install.sh${NORMAL}"
-
-printf "\n\n${YELLOW}NODE: ${NORMAL} Also you should set up 'Droid Sans Mono for Powerline' font in your terminal emulator"

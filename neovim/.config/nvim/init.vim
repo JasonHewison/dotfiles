@@ -4,37 +4,45 @@ let $NVIM_TUI_ENABLE_TRUE_COLOR=1
 call plug#begin('~/.config/nvim/plugged')
 
 " colorschemes
-Plug 'chriskempson/base16-vim'
-Plug 'frankier/neovim-colors-solarized-truecolor-only'
-Plug 'tomasr/molokai'
-
-Plug 'ctrlpvim/ctrlp.vim' " fuzzy file finder, mapped to <leader>t
-Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] } | Plug 'Xuyuanp/nerdtree-git-plugin' | Plug 'ryanoasis/vim-devicons' " file drawer
-Plug 'tpope/vim-fugitive' " amazing git wrapper for vim
-Plug 'Shougo/deoplete.nvim' " keyword completion
-Plug 'ternjs/tern_for_vim', { 'do': 'npm install' }
-Plug 'benekastah/neomake'
-Plug 'airblade/vim-gitgutter'
-Plug 'editorconfig/editorconfig-vim'
 
 Plug 'vim-airline/vim-airline'
 Plug 'vim-airline/vim-airline-themes'
 
-Plug 'othree/yajs.vim'
-Plug 'othree/javascript-libraries-syntax.vim'
-Plug 'othree/es.next.syntax.vim'
+Plug 'pangloss/vim-javascript', {'commit': '871ab29'}
 
+Plug 'ctrlpvim/ctrlp.vim' " fuzzy file finder, mapped to <leader>t
+Plug 'scrooloose/nerdtree', { 'on': ['NERDTreeToggle', 'NERDTreeFind'] } | Plug 'Xuyuanp/nerdtree-git-plugin' | Plug 'ryanoasis/vim-devicons' " file drawer
+Plug 'tpope/vim-fugitive' " amazing git wrapper for vim
+Plug 'airblade/vim-gitgutter'
+Plug 'editorconfig/editorconfig-vim'
+Plug 'sjl/vitality.vim'
+
+Plug 'elzr/vim-json', {'commit': 'f5e3181'}
+Plug 'mxw/vim-jsx', {'commit': 'd0ad98c'}
+Plug 'tpope/vim-markdown', {'commit': 'dcdab0c'}
 Plug 'fatih/vim-nginx'
+Plug 'ekalinin/Dockerfile.vim'
+Plug 'tmux-plugins/vim-tmux'
+
+Plug 'w0rp/ale'
+Plug 'sbdchd/neoformat'
+
+Plug 'Shougo/deoplete.nvim', { 'do': ':UpdateRemotePlugins' }
+Plug 'wokalski/autocomplete-flow'
+" You will also need the following for function argument completion:
+Plug 'Shougo/neosnippet'
+Plug 'Shougo/neosnippet-snippets'
 
 call plug#end()
 
 filetype plugin indent on
 
-colorscheme molokai
 let g:rehash256=1
 
 let mapleader = ","
 let g:mapleader = ','
+
+set mouse=a
 
 " Reload file when it changes
 set autoread
@@ -51,6 +59,9 @@ nnoremap Q <Nop>
 
 " faster redrawing
 set ttyfast
+
+" Use System Clipboard
+set clipboard=unnamed
 
 " setup commandline
 if has('cmdline_info')
@@ -81,6 +92,9 @@ set nowrap
 " Set display characters for tab and trailing
 set list lcs=trail:·,tab:▸\
 
+set tabstop=2
+set shiftwidth=2
+
 " Highlight matching brackets
 set showmatch
 " How many tenths of a second to blink when matching brackets
@@ -105,6 +119,23 @@ set clipboard=unnamed
 let base16colorspace=256
 set t_Co=256
 highlight Comment cterm=italic
+hi javaRepeat ctermfg = green
+hi javaType ctermfg = green
+hi javaStorageClass ctermfg = green cterm=bold
+hi javaDocTags ctermfg = green
+hi Conditional ctermfg = green
+hi LineNr ctermfg = magenta
+hi Comment ctermfg = red
+hi Statement ctermfg = blue
+hi Function ctermfg = blue
+hi Identifier ctermfg = blue
+hi Exception ctermfg = green
+hi Special ctermfg = green
+hi SpecialKey ctermfg = DarkGray
+hi String ctermfg = yellow
+hi MatchParen ctermbg=none cterm=underline ctermfg=magenta
+hi Search cterm=NONE ctermfg=NONE ctermbg=DarkGray
+hi Cursor               ctermfg=none    ctermbg=241             cterm=none              guifg=NONE              guibg=#656565   gui=none
 
 " ,, to save
 nmap <leader>, :w<cr>
@@ -167,18 +198,6 @@ let g:deoplete#disable_auto_complete = 0
 autocmd InsertLeave,CompleteDone * if pumvisible() == 0 | pclose | endif
 
 "
-"	Omnifuncs
-"
-augroup omnifuncs
-  autocmd!
-  autocmd FileType css setlocal omnifunc=csscomplete#CompleteCSS
-  autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
-  autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-  autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
-  autocmd FileType xml setlocal omnifunc=xmlcomplete#CompleteTags
-augroup end
-
-"
 "	Tern
 "
 if exists('g:plugs["tern_for_vim"]')
@@ -188,23 +207,26 @@ if exists('g:plugs["tern_for_vim"]')
   autocmd FileType javascript nnoremap <silent> <buffer> gb :TernDef<CR>
 endif
 
+autocmd BufNewFile,BufRead .eslintrc set ft=javascript
+
 "
-"	Neomake
+" Neoformat
 "
-autocmd! BufWritePost * Neomake
-let g:neomake_warning_sign = {
-  \ 'text': 'W',
-  \ 'texthl': 'WarningMsg',
-  \ }
+"
+"neoformat: format javascript on save
+autocmd BufWritePre *.js Neoformat
 
-let g:neomake_error_sign = {
-  \ 'text': 'E',
-  \ 'texthl': 'ErrorMsg',
-  \ }
-
-let g:neomake_open_list = 2
-
-let g:neomake_javascript_enabled_makers = ['eslint']
+"
+" Ale
+"
+let g:ale_sign_error = '>>'
+let g:ale_sign_warning = '--'
+" Write this in your vimrc file
+let g:ale_lint_on_save = 1
+let g:ale_lint_on_text_changed = 0
+" You can disable this option too
+" if you don't want linters to run on opening a file
+let g:ale_lint_on_enter = 0
 
 nmap <Leader><Space>o :lopen<CR>
 nmap <Leader><Space>c :lclose<CR>
@@ -212,33 +234,13 @@ nmap <Leader><Space>, :ll<CR>
 nmap <Leader><Space>n :lnext<CR>
 nmap <Leader><Space>p :lprev<CR>
 
+let g:vitality_always_assume_iterm = 1
+
+let g:airline_theme='kalisi'
+" let g:airline_theme='base16_chalk'
+" let g:airline_theme='base16_greenscreen'
+" let g:airline_theme='term'
 
 call remote#host#RegisterPlugin('python3', '/home/shougo/work/deoplete.nvim/rplugin/python3/deoplete.py', [
       \ {'sync': 1, 'name': 'DeopleteInitializePython', 'type': 'command', 'opts': {}},
      \ ])
-
-" vim-airline ---------------------------------------------------------------{{{
-let g:airline#extensions#tabline#enabled = 1
-set hidden
-let g:airline#extensions#tabline#fnamemod = ':t'
-let g:airline#extensions#tabline#show_tab_nr = 1
-let g:airline_powerline_fonts = 1
-"let g:airline_theme='distinguished'
-let g:airline_theme='dark'
-cnoreabbrev <expr> x getcmdtype() == ":" && getcmdline() == 'x' ? 'Sayonara' : 'x'
-nmap <leader>t :term<cr>
-nmap <leader>, :bnext<CR>
-nmap <leader>. :bprevious<CR>
-let g:airline#extensions#tabline#buffer_idx_mode = 1
-nmap <leader>1 <Plug>AirlineSelectTab1
-nmap <leader>2 <Plug>AirlineSelectTab2
-nmap <leader>3 <Plug>AirlineSelectTab3
-nmap <leader>4 <Plug>AirlineSelectTab4
-nmap <leader>5 <Plug>AirlineSelectTab5
-nmap <leader>6 <Plug>AirlineSelectTab6
-nmap <leader>7 <Plug>AirlineSelectTab7
-nmap <leader>8 <Plug>AirlineSelectTab8
-nmap <leader>9 <Plug>AirlineSelectTab9
-set guifont=Sauce\ Code\ Pro\ Nerd\ Font\ Complete:h13
-"}}}
-
