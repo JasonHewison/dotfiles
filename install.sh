@@ -1,142 +1,173 @@
 #!/usr/bin/env bash
 
-SCRIPTPATH=`pwd -P`
-BACKUP=`date +'%Y%m%d%H%M%S'`
+set -ex
 
-which -s brew
-if [[ $? != 0 ]] ; then
-  printf "Installing Homebrew\n"
-  /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
-else
-  printf "Updating Homebrew\n"
-  brew update
-fi
+SCRIPTPATH="$(pwd -P)"
+source "$SCRIPTPATH/scripts/_install-helpers.sh"
+BACKUP="$(date +'%Y%m%d%H%M%S')"
 
-if brew info node | grep "Not installed"; then
-  printf "Installing node\n"
-  brew install node
-fi
+install-brew
 
-if brew cask info hyper | grep "Not installed"; then
-  printf "Installing hyper\n"
-  brew cask install hyper
-fi
+brew-install node
+brew-install alacritty
+brew-install bat
+brew-install ctop
+brew-install fzf
+brew-install git
+brew-install jq
+brew-install python2
+brew-install python3
+brew-install neovim
 
-if brew info python | grep "Not installed"; then
-  printf "Installing python\n"
-  brew install python
-fi
+pip2-install neovim
+pip3-install neovim
 
-if brew info python3 | grep "Not installed"; then
-  printf "Installing python3\n"
-  brew install python3
-fi
+brew-install mysql
+brew-install neofetch
+brew-install reattach-to-user-namespace
+brew-install ripgrep
+brew-install tmux
+brew-install tree
+brew-install yarn
+brew-install zsh
 
-if ! gem list --local | grep "neovim"; then
-  printf "Installing neovim gem"
-  sudo gem install neovim
-fi
+brew-cask-install java8
+brew-cask-install font-source-code-pro
 
-if ! pip2 list --format=columns | grep "neovim"; then
-  printf "Installing neovim python2 module\n"
-  pip2 install neovim
-fi
-
-if brew cask info intellij-idea | grep "Not installed"; then
-  printf "Installing intellij-idea\n"
-  brew cask install intellij-idea
-fi
-
-if brew cask info webstorm | grep "Not installed"; then
-  printf "Installing webstorm\n"
-  brew cask install webstorm
-fi
-
-if brew cask info franz | grep "Not installed"; then
-  printf "Installing franz\n"
-  brew cask install franz
-fi
-
-if brew info neovim/neovim/neovim 2>&1 | grep "brew tap neovim/neovim"; then
-  printf "Tapping neovim\n"
-  brew tap neovim/neovim
-fi
-
-if brew info neovim/neovim/neovim | grep "Not installed"; then
-  printf "Installing neovim\n"
-  brew install neovim/neovim/neovim
-fi
-
-if brew info tmux | grep "Not installed"; then
-  printf "Installing tmux\n"
-  brew install tmux
-fi
-
-if brew info fish | grep "Not installed"; then
-  printf "Installing fish\n"
-  brew install fish
-fi
-
-if brew cask info java | grep "Not installed"; then
-  printf "Installing java\n"
-  brew cask install java
-fi
-
-if brew info yarn | grep "Not installed"; then
-  printf "Installing yarn"
-  brew install yarn
-fi
+npm-install n
+n latest
+npm-install pure-prompt
 
 if [ ! -d ~/.config/ ]; then
-  printf "Creating ~/.config\n"
+  echo Creating ~/.config
   mkdir ~/.config
 fi
 
-if [ -d ~/.config/nvim/ ]; then
-  printf "Backing up existing neovim config\n"
-  mv ~/.config/nvim ~/.config/nvim.bak-${BACKUP}
+if [ ! "$(readlink ~/.config/nvim/init.vim)" = "${SCRIPTPATH}/neovim/init.vim" ]; then
+  if [ -d ~/.config/nvim/ ]; then
+    echo Backing up existing neovim config
+    mv ~/.config/nvim "$HOME/.config/nvim.bak-${BACKUP}"
+  fi
+  echo Creating ~/.config/nvim
+  mkdir ~/.config/nvim
+
+  if [ ! -f ~/.config/nvim/autoload/plug.vim ]; then
+    echo Installing vim plug
+    curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
+
+  echo Symlinking neovim config
+  ln -s "${SCRIPTPATH}/neovim/init.vim" ~/.config/nvim/init.vim
 fi
 
-printf "Creating ~/.config/nvim\n"
-mkdir ~/.config/nvim
+if [ ! "$(readlink ~/.config/alacritty/alacritty.yml)" = "${SCRIPTPATH}/alacritty/alacritty.yml" ]; then
+  echo Symlinking alacritty config
+  if [ -f ~/.config/alacritty/alacritty.yml ] || [ -h ~/.config/alacritty/alacritty.yml ]; then
+    mv ~/.config/alacritty "$HOME/.config/alacritty.bak-${BACKUP}"
+  fi
+  mkdir ~/.config/alacritty
 
-if [ -d ~/.config/fish/ ]; then
-  printf "Backing up existing fish config\n"
-  mv ~/.config/fish ~/.config/fish.bak-${BACKUP}
-
-
-printf "Creating ~/.config/fish\n"
-mkdir ~/.config/fish
-
-if [ ! -f ~/.config/nvim/autoload/plug.vim ]; then
-  printf "Installing vim plug\n"
-  curl -fLo ~/.config/nvim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  ln -s "${SCRIPTPATH}/alacritty/alacritty.yml" ~/.config/alacritty/alacritty.yml
 fi
 
-if [ ! -f ~/.config/fish/functions/fisher.fish ]; then
-  printf "Installing fisher\n"
-  curl -Lo ~/.config/fish/functions/fisher.fish --create-dirs git.io/fisher
+if [ ! "$(readlink ~/.tmux.conf)" = "${SCRIPTPATH}/tmux/tmux.conf" ]; then
+  echo Symlinking tmux config
+  if [ -f ~/.tmux.conf ] || [ -h ~/.tmux.conf ]; then
+    mv ~/.tmux.conf "$HOME/.tmux.conf.bak-${BACKUP}"
+  fi
+  ln -s "${SCRIPTPATH}/tmux/tmux.conf" ~/.tmux.conf
 fi
 
-printf "Installing pure\n"
-fish -c "fisher rafaelrinaldi/pure"
+if [ ! "$(readlink ~/.zshrc)" = "${SCRIPTPATH}/zsh/zshrc" ]; then
+  echo Symlinking zsh config
+  if [ -f ~/.zshrc ] || [ -h ~/.zshrc ]; then
+    mv ~/.zshrc "$HOME/.zshrc.bak-${BACKUP}"
+  fi
+  ln -s "${SCRIPTPATH}/zsh/zshrc" ~/.zshrc
 
-#printf "Symlinking tmux\n"
-#mv ~/.tmux.conf ~/.tmux.conf.back
-#ln -s ${SCRIPTPATH}/tmux/.tmux-linux.conf ~/.tmux.conf
+  if ! grep "$(command -v zsh)" /etc/shells; then
+    command -v zsh | sudo tee -a /etc/shells
+  fi
 
-printf "Symlinking neovim\n"
-ln -s ${SCRIPTPATH}/neovim/.config/nvim/init.vim ~/.config/nvim/init.vim
-
-printf "Symlinking fish\n"
-ln -s ${SCRIPTPATH}/fish/.config/fish/config.fish ~/.config/fish/config.fish
-
-printf "Symlinking tmux\n"
-ln -s ${SCRIPTPATH}/tmux/.tmux.conf ~/.tmux.conf
-
-if ! cat /etc/shells | grep $(which fish); then
-  echo $(which fish) | sudo tee -a /etc/shells
+  chsh -s "$(command -v zsh)"
 fi
 
-chsh -s $(which fish)
+# Make OSX feel a little snappier, I normally run this after running https://gist.github.com/BenNunney/7219538
+
+if [ ! "$(scutil --get ComputerName)" != "Jason Hewison MPB" ]; then
+  sudo scutil --set ComputerName "Jason Hewison MBP"
+fi
+if [ ! "$(scutil --get HostName)" != "Jason Hewison MPB" ]; then
+  sudo scutil --set HostName "Jason Hewison MBP"
+fi
+if [ ! "$(scutil --get LocalHostName)" != "Jason-Hewison-MPB" ]; then
+  sudo scutil --set LocalHostName "Jason-Hewison-MBP"
+fi
+
+# Disable the sound effects on boot
+sudo nvram SystemAudioVolume=" "
+
+# Menu bar: hide the useless Time Machine and Volume icons
+defaults write com.apple.systemuiserver menuExtras -array "/System/Library/CoreServices/Menu Extras/Bluetooth.menu" "/System/Library/CoreServices/Menu Extras/AirPort.menu" "/System/Library/CoreServices/Menu Extras/Battery.menu" "/System/Library/CoreServices/Menu Extras/Clock.menu"
+
+# Expand save panel by default
+defaults write NSGlobalDomain NSNavPanelExpandedStateForSaveMode -bool true
+
+# Expand print panel by default
+defaults write NSGlobalDomain PMPrintingExpandedStateForPrint -bool true
+
+# Save to disk (not to iCloud) by default
+defaults write NSGlobalDomain NSDocumentSaveNewDocumentsToCloud -bool false
+
+# Automatically quit printer app once the print jobs complete
+defaults write com.apple.print.PrintingPrefs "Quit When Finished" -bool true
+
+# Reveal IP address, hostname, OS version, etc. when clicking the clock
+# in the login window
+sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
+
+# Restart automatically if the computer freezes
+systemsetup -setrestartfreeze on
+
+# Check for software updates daily, not just once per week
+defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+
+# Increase sound quality for Bluetooth headphones/headsets
+defaults write com.apple.BluetoothAudioAgent "Apple Bitpool Min (editable)" -int 40
+
+# Speed up window tranisations
+defaults write NSGlobalDomain NSWindowResizeTime 0.01;
+
+# Speed up mission control transition (F3)
+defaults write com.apple.dock expose-animation-duration -float 0.1; 
+
+# Speed up Launchpad (F4)
+defaults write com.apple.dock springboard-show-duration -float 0.1;
+defaults write com.apple.dock springboard-hide-duration -float 0.1;
+
+# Stop dock item jumping when they want my attension
+defaults write com.apple.dock no-bouncing -bool TRUE;
+
+# Set preview to default screenshots to jpg.
+defaults write com.apple.screencapture type jpg
+killall SystemUIServer
+
+# Save screenshots to Screenshots folder
+mkdir -p ~/Screenshots
+defaults write com.apple.screencapture location -string "${HOME}/Screenshots"
+
+# Disable shadow in screenshots
+defaults write com.apple.screencapture disable-shadow -bool true
+
+# Enable subpixel font rendering on non-Apple LCDs
+defaults write NSGlobalDomain AppleFontSmoothing -int 2
+
+# Enable HiDPI display modes (requires restart)
+sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+
+# Restart dock so effects can kick in.
+killall Dock;
+
+# Hide spotlight icon
+sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
 

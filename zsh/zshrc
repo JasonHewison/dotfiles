@@ -1,0 +1,47 @@
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+export EDITOR="nvim"
+export VISUAL="nvim"
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow --glob "!.git/*"'
+export PATH="node_modules/.bin:$PATH"
+export PATH="~/bin:$PATH"
+export PATH="/usr/local/opt/python/libexec/bin:$PATH"
+fpath=(/usr/local/share/zsh-completions $fpath)
+
+alias vim=nvim
+bindkey -v
+KEYTIMEOUT=1
+
+function zle-line-init zle-keymap-select {
+    case ${KEYMAP} in
+        (vicmd)      echo -ne "\e[2 q" ;;
+        (main|viins) echo -ne "\e[6 q"  ;;
+        (*)          echo -ne "\e[6 q"  ;;
+    esac
+    zle reset-prompt
+}
+
+zle -N zle-line-init
+zle -N zle-keymap-select
+
+setopt append_history share_history histignorealldups
+
+source /usr/local/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source /usr/local/share/zsh-history-substring-search/zsh-history-substring-search.zsh
+source /usr/local/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+[ -f ~/.local.zshrc ] && source ~/.local.zshrc
+
+autoload -U promptinit; promptinit
+prompt pure
+
+zstyle :compinstall filename '/Users/jasonhewison/.zshrc'
+
+autoload -Uz compinit
+if [ $(date +'%j') != $(stat -f '%Sm' -t '%j' ~/.zcompdump) ]; then
+  compinit
+else
+  compinit -C
+fi
+
+[ -f /usr/local/etc/profile.d/autojump.sh ] && . /usr/local/etc/profile.d/autojump.sh
