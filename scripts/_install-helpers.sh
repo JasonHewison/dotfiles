@@ -36,7 +36,6 @@ npm-install() {
 }
 
 install-brew() {
-  
   if command -v brew; then
     echo "Updating Homebrew"
     brew update
@@ -44,4 +43,5 @@ install-brew() {
     echo "Installing Homebrew"
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
+  brew tap caskroom/cask
 }

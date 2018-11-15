@@ -92,6 +92,14 @@ if [ ! "$(readlink ~/.zshrc)" = "${SCRIPTPATH}/zsh/zshrc" ]; then
   chsh -s "$(command -v zsh)"
 fi
 
+if [ ! "$(readlink ~/.gitconfig)" = "${SCRIPTPATH}/git/gitconfig" ]; then
+  echo Symlinking git config
+  if [ -f ~/.gitconfig ] || [ -h ~/.gitconfig ]; then
+    mv ~/.tmux.conf "$HOME/.gitconfig.bak-${BACKUP}"
+  fi
+  ln -s "${SCRIPTPATH}/git/gitconfig" ~/.gitconfig
+fi
+
 # Make OSX feel a little snappier, I normally run this after running https://gist.github.com/BenNunney/7219538
 
 if [ ! "$(scutil --get ComputerName)" != "Jason Hewison MPB" ]; then

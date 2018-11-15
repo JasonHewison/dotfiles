@@ -1,0 +1,24 @@
+[user]
+	email = jason.hewison@anaplan.com
+	name = Jason Hewison
+[alias]
+	prune = fetch --prune
+	undo = reset --soft HEAD^
+	stash-all = stash save --include-untracked
+	lg = "log --color --graph --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr) %C(bold blue)<%an>%Creset' --abbrev-commit"
+	update-from = "!f() { git fetch  --prune; git merge --ff-only / || git rebase --preserve-merges /; }; f"
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
+[core]
+	editor = nvim
+	excludesfile = ~/.gitignore
+[status]
+	showUntrackedFiles = all
+[merge]
+	ff = only
+[push]
+	default = simple
+	followTags = true
