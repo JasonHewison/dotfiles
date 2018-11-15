@@ -35,10 +35,12 @@ brew-install zsh
 brew-cask-install java8
 brew-cask-install font-source-code-pro
 
-sudo mkdir -p /usr/local/n 
-sudo chown -R $(whoami) /usr/local/n
-npm-install n
-/usr/local/bin/n latest
+if [ ! -d /usr/local/n/ ]; then
+  sudo mkdir -p /usr/local/n 
+  sudo chown -R $(whoami) /usr/local/n
+  npm-install n
+  /usr/local/bin/n latest
+fi
 npm-install pure-prompt
 
 if [ ! -d ~/.config/ ]; then
@@ -98,7 +100,7 @@ fi
 if [ ! "$(readlink ~/.gitconfig)" = "${SCRIPTPATH}/git/gitconfig" ]; then
   echo Symlinking git config
   if [ -f ~/.gitconfig ] || [ -h ~/.gitconfig ]; then
-    mv ~/.tmux.conf "$HOME/.gitconfig.bak-${BACKUP}"
+    mv ~/.gitconfig "$HOME/.gitconfig.bak-${BACKUP}"
   fi
   ln -s "${SCRIPTPATH}/git/gitconfig" ~/.gitconfig
 fi
