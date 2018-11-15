@@ -29,7 +29,7 @@ pip3-install() {
 }
 
 npm-install() {
-  if ! npm -g ls | grep "$@"; then
+  if ! npm -g ls | grep "- ${@}@"; then
     echo Installing "$@" npm package
     npm install -g "$@"
   fi
@@ -44,4 +44,6 @@ install-brew() {
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
   brew tap caskroom/cask
+  brew tap homebrew/cask-versions
+  brew tap homebrew/cask-fonts
 }

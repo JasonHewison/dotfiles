@@ -9,6 +9,7 @@ BACKUP="$(date +'%Y%m%d%H%M%S')"
 install-brew
 
 brew-install node
+brew tap mscharley/homebrew
 brew-install alacritty
 brew-install bat
 brew-install ctop
@@ -34,8 +35,10 @@ brew-install zsh
 brew-cask-install java8
 brew-cask-install font-source-code-pro
 
+sudo mkdir -p /usr/local/n 
+sudo chown -R $(whoami) /usr/local/n
 npm-install n
-n latest
+/usr/local/bin/n latest
 npm-install pure-prompt
 
 if [ ! -d ~/.config/ ]; then
