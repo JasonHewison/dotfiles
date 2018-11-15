@@ -168,6 +168,3 @@ sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutio
 # Restart dock so effects can kick in.
 killall Dock;
 
-# Hide spotlight icon
-sudo chmod 600 /System/Library/CoreServices/Search.bundle/Contents/MacOS/Search
-
