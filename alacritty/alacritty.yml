@@ -449,9 +449,13 @@ key_bindings:
   - { key: F12, mods: Command, chars: "\x1b[24;3~" }
   - { key: NumpadEnter, chars: "\n" }
 
+  - { key: Key3, mods: Alt, chars: "\x23" }
+  - { key: N,        mods: Command,       command: { program: "/usr/bin/open", args: [ "-n", "/usr/local/Cellar/alacritty/0.2.3/Applications/Alacritty.app" ]} }
+
+
 shell:
   program: /usr/local/bin/zsh
   args:
     - --login
     - -c
-    - 'tmux attach -t TMUX || tmux new -s TMUX'
+    - 'tmux'

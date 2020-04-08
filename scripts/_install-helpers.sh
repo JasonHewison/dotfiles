@@ -43,7 +43,7 @@ install-brew() {
     echo "Installing Homebrew"
     /usr/bin/ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
   fi
-  brew tap caskroom/cask
+  brew tap homebrew/cask
   brew tap homebrew/cask-versions
   brew tap homebrew/cask-fonts
 }

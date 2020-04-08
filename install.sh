@@ -27,6 +27,7 @@ brew-install mysql
 brew-install neofetch
 brew-install reattach-to-user-namespace
 brew-install ripgrep
+brew-install exa
 brew-install tmux
 brew-install tree
 brew-install yarn
@@ -176,7 +177,10 @@ defaults write com.apple.screencapture disable-shadow -bool true
 defaults write NSGlobalDomain AppleFontSmoothing -int 2
 
 # Enable HiDPI display modes (requires restart)
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
+
+# Show battery percentage
+defaults write com.apple.menuextra.battery ShowPercent -string "YES"
 
 # Restart dock so effects can kick in.
 killall Dock;
